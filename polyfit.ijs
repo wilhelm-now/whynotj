@@ -34,3 +34,15 @@ coeffs =. (%. lhs) +/ .* rhs NB. inverse lhs times rhs
 
 |. coeffs NB. reverse so that highest power coefficient is first
 )
+
+polyeval =: dyad : 0
+NB. given a series of coefficients evaluate the polynomial function
+NB. lhs = coefficients, rhs = where to evaluate functions at
+
+coeffs =. |. x  NB. mirror/reverse coefficients to go from lowest to highest
+degree =. _1 + $ coeffs
+xs =. y
+powered =. degree vandermonde xs
+
++/"1 coeffs *"1 powered NB. "1 to apply on correct shape, might not be natural.
+)
