@@ -1,3 +1,5 @@
+load 'trig'
+
 qplus =: +
 
 qminus =: -
@@ -39,8 +41,28 @@ magnitude =: monad : 0
 
 qmag =: magnitude
 
+qnormalize =: monad : 0
+y % magnitude y
+)
+
 qinverse =: monad : 0
 (qconjugate y) % magsquared y
 )
 
 qinv =: qinverse
+
+qrotv =: dyad : 0
+q =. x
+v =. 0, y
+qimag q qprod v qprod qconj q
+)
+
+q2axisangle =: monad : 0
+NB. Q = q_real + q_imag = cos(angle/2) + axis*sin(angle/2)
+NB. boxed result angle, axis
+acos =. _2 & o.
+sin =. 1 & o.
+angle =. 2 * acos qreal y
+axis =. (qimag y) % (sin angle % 2)
+angle ; axis
+)
