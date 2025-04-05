@@ -10,6 +10,7 @@ xs =. y
 xs ^/ i. (degree + 1)
 )
 
+
 polyfit =: dyad : 0
 NB. Attemps compatibily with polyfit in other packages
 NB. usage DEGREE polyfit X_DATA;Y_DATA
@@ -25,12 +26,15 @@ NB. write AT@A@coeffs = AT@ys to get compatible shapes
 NB. then coeffs = (AT@A)_inverse @ AT @ ys
 
 A =. degree vandermonde xs
+NB. same scale trick as in numpy, column-wise sqrt of sum of columns squared
+scale =. %: +/ *: A
+A =. A %"1 scale
 AT =.|: A NB. transpose
 
 lhs =. AT +/ .* A
 rhs =. AT +/ .* ys
 coeffs =. (%. lhs) +/ .* rhs NB. inverse lhs times rhs
-
+coeffs =. coeffs % scale NB. unscale 
 |. coeffs NB. reverse so that highest power coefficient is first
 )
 
@@ -55,7 +59,7 @@ coeffs =. x
 'xs ys' =. y
 y_avg =. +/ ys % # y
 y_fit =. coeffs polyeval xs
-sum_of_squares =. monad : '+/ y^2'
+sum_of_squares =. monad : '+/ *: y' NB. *: y is same as y^2
 res_sum_squares =. sum_of_squares ys - y_fit
 tot_sum_squares =. sum_of_squares ys - y_avg
 
