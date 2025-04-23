@@ -32,7 +32,7 @@ qconjugate =: monad : 0
 qconj =: qconjugate
 
 magsquared =: monad : 0
-+/ y * y
++/ *: y
 )
 
 magnitude =: monad : 0
@@ -52,6 +52,7 @@ qinverse =: monad : 0
 qinv =: qinverse
 
 qrotv =: dyad : 0
+NB. this is the typical sandwich operation to rotate a vector (right argument) by a quaternion (left argument)
 q =. x
 v =. 0, y
 qimag q qprod v qprod qconj q
@@ -66,3 +67,18 @@ angle =. 2 * acos qreal y
 axis =. (qimag y) % (sin angle % 2)
 angle ; axis
 )
+
+qaxisangle2quat =: dyad : 0
+NB. left argument axis right argument angle in radians
+axis =. qnormalize x
+angle =. y
+cos =. 2 & o.
+sin =. 1 & o.
+w =. cos -: angle
+n =. axis * sin -: angle
+w, n
+)
+
+qx =: 1 0 0 & qaxisangle2quat
+qy =: 0 1 0 & qaxisangle2quat
+qz =: 0 0 1 & qaxisangle2quat
