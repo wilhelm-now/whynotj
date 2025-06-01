@@ -58,12 +58,26 @@ v =. 0, y
 qimag q qprod v qprod qconj q
 )
 
+q2rotmat =: monad : 0
+NB. equivalent matrix to applying qrotv
+'w i j k' =. y
+'ww ii jj kk' =. *: y
+r0 =. (ww + ii + (-jj) -kk) , (+: (i*j) - k*w) , (+: (i*k) + j*w)
+r1 =. (+: (i*j) + k*w) , (ww + (-ii) + jj - kk) , (+: (j*k) - i*w)
+r2 =. (+: (i*k) - j*w) , (+: (j*k) + i*w) , (ww + (-ii) + (-jj) + kk)
+> r0 ; r1 ; r2
+)
+
+q2rotmat2 =: monad : 0
+NB. alternate form
+NB. stack rotation of each unit vector, transpose  to form matrix
+|: > y & qrotv each 1 0 0 ; 0 1 0 ; 0 0 1
+)
+
 q2axisangle =: monad : 0
 NB. Q = q_real + q_imag = cos(angle/2) + axis*sin(angle/2)
 NB. boxed result angle, axis
-acos =. _2 & o.
-sin =. 1 & o.
-angle =. 2 * acos qreal y
+angle =. 2 * arccos qreal y
 axis =. (qimag y) % (sin angle % 2)
 angle ; axis
 )
@@ -72,8 +86,6 @@ qaxisangle2quat =: dyad : 0
 NB. left argument axis right argument angle in radians
 axis =. qnormalize x
 angle =. y
-cos =. 2 & o.
-sin =. 1 & o.
 w =. cos -: angle
 n =. axis * sin -: angle
 w, n
@@ -82,3 +94,6 @@ w, n
 qx =: 1 0 0 & qaxisangle2quat
 qy =: 0 1 0 & qaxisangle2quat
 qz =: 0 0 1 & qaxisangle2quat
+
+deg2rad =: (pi % 180) & *
+rad2deg =: deg2rad^:_1
