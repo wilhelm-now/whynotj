@@ -1,4 +1,5 @@
 load 'trig'
+load 'math/misc/svd'
 
 qplus =: +
 
@@ -45,11 +46,7 @@ qnormalize =: monad : 0
 y % magnitude y
 )
 
-qinverse =: monad : 0
-(qconjugate y) % magsquared y
-)
-
-qinv =: qinverse
+qinverse =: qconjugate % magsquared
 
 qrotv =: dyad : 0
 NB. this is the typical sandwich operation to rotate a vector (right argument) by a quaternion (left argument)
@@ -72,6 +69,18 @@ q2rotmat2 =: monad : 0
 NB. alternate form
 NB. stack rotation of each unit vector, transpose  to form matrix
 |: > y & qrotv each 1 0 0 ; 0 1 0 ; 0 0 1
+)
+
+qavg =: monad : 0
+NB. chordal L2 mean
+NB. same as scipy.spatial.transform.Rotation.mean
+NB. right argument is vertically stacked quaterions (shape N 4)
+NB. optional left arguments are weights, if not provided evenly weighted
+1 qavg y
+:
+k =. (x * |: y) +/ .* y
+'u s v' =. svd k
+{."1 > v NB. first column for v matrix
 )
 
 q2axisangle =: monad : 0
