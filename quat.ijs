@@ -104,5 +104,23 @@ qx =: 1 0 0 & qaxisangle2quat
 qy =: 0 1 0 & qaxisangle2quat
 qz =: 0 0 1 & qaxisangle2quat
 
+qangle =: monad : 0
+NB. angle from identity quaternion in radians
+1 0 0 0 qangle y
+:
+NB. angle between two quaternions in radians
+mx =. qmag x
+my =. qmag y
++: arccos (+/ x * y) % mx * my
+)
+
+qangle2 =: monad : 0
+NB. alternative implementation, finds quat from lhs to rhs first
+1 0 0 0 qangle2 y
+:
+qdelta =. x qprod qinverse y
++: arccos qreal qdelta
+)
+
 deg2rad =: (pi % 180) & *
 rad2deg =: deg2rad^:_1
