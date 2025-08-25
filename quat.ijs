@@ -111,13 +111,19 @@ NB. angle from identity quaternion in radians
 NB. angle between two quaternions in radians
 mx =. qmag x
 my =. qmag y
-+: arccos (+/ x * y) % mx * my
+NB. absolute to get angle closer to 0 than 2*pi
++: arccos | (+/ x * y) % mx * my
 )
 
 qangle2 =: monad : 0
 NB. alternative implementation, finds quat from lhs to rhs first
 1 0 0 0 qangle2 y
 :
+NB. Treat inputs as rotation quats, avoid arccos of |input| >= 1
+x =. qnormalize x
+y =. qnormalize y
+NB. select closest of y and -y so that output angle is <= pi
+y =. -^:(0 > +/ x * y) y NB. negate if dot product is less than 0
 qdelta =. x qprod qinverse y
 +: arccos qreal qdelta
 )
