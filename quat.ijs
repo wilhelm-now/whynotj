@@ -55,6 +55,11 @@ v =. 0, y
 qimag q qprod v qprod qconj q
 )
 
+qexp =: monad : '(^ qreal y) * (cos qmag qimag y) , ((% qmag) qimag y) * sin qmag qimag y' :. qlog
+
+qlog =: monad : '(^. qmag y) , ((% qmag) qimag y) * arccos (qreal y) % qmag y' :. qexp
+
+
 q2rotmat =: monad : 0
 NB. equivalent matrix to applying qrotv
 'w i j k' =. y
@@ -78,7 +83,7 @@ NB. right argument is vertically stacked quaterions (shape N 4)
 NB. optional left arguments are weights, if not provided evenly weighted
 1 qavg y
 :
-k =. (x * |: y) +/ .* y
+k =. (|: x * y) +/ .* y
 'u s v' =. svd k
 {."1 > v NB. first column for v matrix
 )
@@ -126,6 +131,15 @@ NB. select closest of y and -y so that output angle is <= pi
 y =. -^:(0 > +/ x * y) y NB. negate if dot product is less than 0
 qdelta =. x qprod qinverse y
 +: arccos qreal qdelta
+)
+
+qangle3 =: monad : 0
+NB. another alternative implementation, based on log form
+1 0 0 0 qangle3 y
+:
+x =. qnormalize x
+y =. qnormalize y
++: qmag qlog x qprod qinverse y
 )
 
 deg2rad =: (pi % 180) & *
